@@ -3,6 +3,8 @@ import * as msk from '@aws-cdk/aws-msk';
 import * as ec2 from "@aws-cdk/aws-ec2"
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as sqs from "@aws-cdk/aws-sqs";
+import * as secrets from "@aws-cdk/aws-secretsmanager";
+import * as rds from "@aws-cdk/aws-rds";
 import * as path from 'path';
 
 export class CdkStack extends cdk.Stack {
@@ -17,6 +19,22 @@ export class CdkStack extends cdk.Stack {
       clusterName: 'msk-demo',
       kafkaVersion: msk.KafkaVersion.V2_8_0,
       vpc
+    });
+
+    const auroraCluster = new rds.DatabaseCluster(this, 'aurora-mysql-db', {
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_09_2 }),
+      instanceProps: {
+        vpcSubnets: {
+          subnetType: ec2.SubnetType.PRIVATE,
+        },
+        vpc,
+      },
+    });
+
+    const rdsProxySecret = new secrets.Secret(this, 'rds-proxy-secret');
+    const rdsProxy = auroraCluster.addProxy('rds-proxy', {
+      secrets: [rdsProxySecret],
+      vpc,
     });
 
     // const targetLambda = new lambda.Function(this, 'target-lambda', {

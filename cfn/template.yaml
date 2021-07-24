@@ -1,0 +1,549 @@
+Resources:
+  vpcA2121C38:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 172.30.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/Resource
+  vpcPublicSubnet1Subnet2E65531E:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 172.30.0.0/19
+      VpcId:
+        Ref: vpcA2121C38
+      AvailabilityZone: us-east-1a
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet1
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet1/Subnet
+  vpcPublicSubnet1RouteTable48A2DF9B:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: vpcA2121C38
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet1
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet1/RouteTable
+  vpcPublicSubnet1RouteTableAssociation5D3F4579:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: vpcPublicSubnet1RouteTable48A2DF9B
+      SubnetId:
+        Ref: vpcPublicSubnet1Subnet2E65531E
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet1/RouteTableAssociation
+  vpcPublicSubnet1DefaultRoute10708846:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: vpcPublicSubnet1RouteTable48A2DF9B
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: vpcIGWE57CBDCA
+    DependsOn:
+      - vpcVPCGW7984C166
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet1/DefaultRoute
+  vpcPublicSubnet1EIPDA49DCBE:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet1
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet1/EIP
+  vpcPublicSubnet1NATGateway9C16659E:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId:
+        Ref: vpcPublicSubnet1Subnet2E65531E
+      AllocationId:
+        Fn::GetAtt:
+          - vpcPublicSubnet1EIPDA49DCBE
+          - AllocationId
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet1
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet1/NATGateway
+  vpcPublicSubnet2Subnet009B674F:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 172.30.32.0/19
+      VpcId:
+        Ref: vpcA2121C38
+      AvailabilityZone: us-east-1b
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet2
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet2/Subnet
+  vpcPublicSubnet2RouteTableEB40D4CB:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: vpcA2121C38
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet2
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet2/RouteTable
+  vpcPublicSubnet2RouteTableAssociation21F81B59:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: vpcPublicSubnet2RouteTableEB40D4CB
+      SubnetId:
+        Ref: vpcPublicSubnet2Subnet009B674F
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet2/RouteTableAssociation
+  vpcPublicSubnet2DefaultRouteA1EC0F60:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: vpcPublicSubnet2RouteTableEB40D4CB
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: vpcIGWE57CBDCA
+    DependsOn:
+      - vpcVPCGW7984C166
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet2/DefaultRoute
+  vpcPublicSubnet2EIP9B3743B1:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet2
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet2/EIP
+  vpcPublicSubnet2NATGateway9B8AE11A:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId:
+        Ref: vpcPublicSubnet2Subnet009B674F
+      AllocationId:
+        Fn::GetAtt:
+          - vpcPublicSubnet2EIP9B3743B1
+          - AllocationId
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet2
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet2/NATGateway
+  vpcPublicSubnet3Subnet11B92D7C:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 172.30.64.0/19
+      VpcId:
+        Ref: vpcA2121C38
+      AvailabilityZone: us-east-1c
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet3
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet3/Subnet
+  vpcPublicSubnet3RouteTableA3C00665:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: vpcA2121C38
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet3
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet3/RouteTable
+  vpcPublicSubnet3RouteTableAssociationD102D1C4:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: vpcPublicSubnet3RouteTableA3C00665
+      SubnetId:
+        Ref: vpcPublicSubnet3Subnet11B92D7C
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet3/RouteTableAssociation
+  vpcPublicSubnet3DefaultRoute3F356A11:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: vpcPublicSubnet3RouteTableA3C00665
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: vpcIGWE57CBDCA
+    DependsOn:
+      - vpcVPCGW7984C166
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet3/DefaultRoute
+  vpcPublicSubnet3EIP2C3B9D91:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet3
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet3/EIP
+  vpcPublicSubnet3NATGateway82F6CA9E:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId:
+        Ref: vpcPublicSubnet3Subnet11B92D7C
+      AllocationId:
+        Fn::GetAtt:
+          - vpcPublicSubnet3EIP2C3B9D91
+          - AllocationId
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PublicSubnet3
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PublicSubnet3/NATGateway
+  vpcPrivateSubnet1Subnet934893E8:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 172.30.96.0/19
+      VpcId:
+        Ref: vpcA2121C38
+      AvailabilityZone: us-east-1a
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: msk-demo-stack/vpc/PrivateSubnet1
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet1/Subnet
+  vpcPrivateSubnet1RouteTableB41A48CC:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: vpcA2121C38
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PrivateSubnet1
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet1/RouteTable
+  vpcPrivateSubnet1RouteTableAssociation67945127:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: vpcPrivateSubnet1RouteTableB41A48CC
+      SubnetId:
+        Ref: vpcPrivateSubnet1Subnet934893E8
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet1/RouteTableAssociation
+  vpcPrivateSubnet1DefaultRoute1AA8E2E5:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: vpcPrivateSubnet1RouteTableB41A48CC
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: vpcPublicSubnet1NATGateway9C16659E
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet1/DefaultRoute
+  vpcPrivateSubnet2Subnet7031C2BA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 172.30.128.0/19
+      VpcId:
+        Ref: vpcA2121C38
+      AvailabilityZone: us-east-1b
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: msk-demo-stack/vpc/PrivateSubnet2
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet2/Subnet
+  vpcPrivateSubnet2RouteTable7280F23E:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: vpcA2121C38
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PrivateSubnet2
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet2/RouteTable
+  vpcPrivateSubnet2RouteTableAssociation007E94D3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: vpcPrivateSubnet2RouteTable7280F23E
+      SubnetId:
+        Ref: vpcPrivateSubnet2Subnet7031C2BA
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet2/RouteTableAssociation
+  vpcPrivateSubnet2DefaultRouteB0E07F99:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: vpcPrivateSubnet2RouteTable7280F23E
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: vpcPublicSubnet2NATGateway9B8AE11A
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet2/DefaultRoute
+  vpcPrivateSubnet3Subnet985AC459:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 172.30.160.0/19
+      VpcId:
+        Ref: vpcA2121C38
+      AvailabilityZone: us-east-1c
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: msk-demo-stack/vpc/PrivateSubnet3
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet3/Subnet
+  vpcPrivateSubnet3RouteTable24DA79A0:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: vpcA2121C38
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc/PrivateSubnet3
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet3/RouteTable
+  vpcPrivateSubnet3RouteTableAssociationC58B3C2C:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: vpcPrivateSubnet3RouteTable24DA79A0
+      SubnetId:
+        Ref: vpcPrivateSubnet3Subnet985AC459
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet3/RouteTableAssociation
+  vpcPrivateSubnet3DefaultRoute30C45F47:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: vpcPrivateSubnet3RouteTable24DA79A0
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: vpcPublicSubnet3NATGateway82F6CA9E
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/PrivateSubnet3/DefaultRoute
+  vpcIGWE57CBDCA:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: msk-demo-stack/vpc
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/IGW
+  vpcVPCGW7984C166:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: vpcA2121C38
+      InternetGatewayId:
+        Ref: vpcIGWE57CBDCA
+    Metadata:
+      aws:cdk:path: msk-demo-stack/vpc/VPCGW
+  mskSecurityGroup06530AC0:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: MSK security group
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId:
+        Ref: vpcA2121C38
+    Metadata:
+      aws:cdk:path: msk-demo-stack/msk/SecurityGroup/Resource
+  msk728F0B66:
+    Type: AWS::MSK::Cluster
+    Properties:
+      BrokerNodeGroupInfo:
+        ClientSubnets:
+          - Ref: vpcPrivateSubnet1Subnet934893E8
+          - Ref: vpcPrivateSubnet2Subnet7031C2BA
+          - Ref: vpcPrivateSubnet3Subnet985AC459
+        InstanceType: kafka.m5.large
+        SecurityGroups:
+          - Fn::GetAtt:
+              - mskSecurityGroup06530AC0
+              - GroupId
+        StorageInfo:
+          EBSStorageInfo:
+            VolumeSize: 1000
+      ClusterName: msk-demo
+      KafkaVersion: 2.8.0
+      NumberOfBrokerNodes: 3
+      EncryptionInfo:
+        EncryptionInTransit:
+          ClientBroker: TLS
+          InCluster: true
+      LoggingInfo:
+        BrokerLogs:
+          CloudWatchLogs:
+            Enabled: false
+          Firehose:
+            Enabled: false
+          S3:
+            Enabled: false
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: msk-demo-stack/msk/Resource
+  auroramysqldbSubnets19C6AE0F:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnets for aurora-mysql-db database
+      SubnetIds:
+        - Ref: vpcPrivateSubnet1Subnet934893E8
+        - Ref: vpcPrivateSubnet2Subnet7031C2BA
+        - Ref: vpcPrivateSubnet3Subnet985AC459
+    Metadata:
+      aws:cdk:path: msk-demo-stack/aurora-mysql-db/Subnets/Default
+  auroramysqldbSecurityGroup77E0962F:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: RDS security group
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId:
+        Ref: vpcA2121C38
+    Metadata:
+      aws:cdk:path: msk-demo-stack/aurora-mysql-db/SecurityGroup/Resource
+  auroramysqldbSecretA03E4A27:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description:
+        Fn::Join:
+          - ""
+          - - "Generated by the CDK for stack: "
+            - Ref: AWS::StackName
+      GenerateSecretString:
+        ExcludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+        GenerateStringKey: password
+        PasswordLength: 30
+        SecretStringTemplate: '{"username":"admin"}'
+    Metadata:
+      aws:cdk:path: msk-demo-stack/aurora-mysql-db/Secret/Resource
+  auroramysqldbSecretAttachment5A9074E0:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId:
+        Ref: auroramysqldbSecretA03E4A27
+      TargetId:
+        Ref: auroramysqldb5D6E2C78
+      TargetType: AWS::RDS::DBCluster
+    Metadata:
+      aws:cdk:path: msk-demo-stack/aurora-mysql-db/Secret/Attachment/Resource
+  auroramysqldb5D6E2C78:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      Engine: aurora-mysql
+      CopyTagsToSnapshot: true
+      DBClusterParameterGroupName: default.aurora-mysql5.7
+      DBSubnetGroupName:
+        Ref: auroramysqldbSubnets19C6AE0F
+      EngineVersion: 5.7.mysql_aurora.2.09.2
+      MasterUsername:
+        Fn::Join:
+          - ""
+          - - "{{resolve:secretsmanager:"
+            - Ref: auroramysqldbSecretA03E4A27
+            - :SecretString:username::}}
+      MasterUserPassword:
+        Fn::Join:
+          - ""
+          - - "{{resolve:secretsmanager:"
+            - Ref: auroramysqldbSecretA03E4A27
+            - :SecretString:password::}}
+      VpcSecurityGroupIds:
+        - Fn::GetAtt:
+            - auroramysqldbSecurityGroup77E0962F
+            - GroupId
+    UpdateReplacePolicy: Snapshot
+    DeletionPolicy: Snapshot
+    Metadata:
+      aws:cdk:path: msk-demo-stack/aurora-mysql-db/Resource
+  auroramysqldbInstance1C1D8D786:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: db.t3.medium
+      DBClusterIdentifier:
+        Ref: auroramysqldb5D6E2C78
+      DBSubnetGroupName:
+        Ref: auroramysqldbSubnets19C6AE0F
+      Engine: aurora-mysql
+      EngineVersion: 5.7.mysql_aurora.2.09.2
+      PubliclyAccessible: false
+    DependsOn:
+      - vpcPrivateSubnet1DefaultRoute1AA8E2E5
+      - vpcPrivateSubnet2DefaultRouteB0E07F99
+      - vpcPrivateSubnet3DefaultRoute30C45F47
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: msk-demo-stack/aurora-mysql-db/Instance1
+  auroramysqldbInstance280F5FF7E:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: db.t3.medium
+      DBClusterIdentifier:
+        Ref: auroramysqldb5D6E2C78
+      DBSubnetGroupName:
+        Ref: auroramysqldbSubnets19C6AE0F
+      Engine: aurora-mysql
+      EngineVersion: 5.7.mysql_aurora.2.09.2
+      PubliclyAccessible: false
+    DependsOn:
+      - vpcPrivateSubnet1DefaultRoute1AA8E2E5
+      - vpcPrivateSubnet2DefaultRouteB0E07F99
+      - vpcPrivateSubnet3DefaultRoute30C45F47
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: msk-demo-stack/aurora-mysql-db/Instance2
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAAE11RwW7CMAz9lt1DWKdNuw7aCfUyVQVxd4MHAZqg2AGhqv++pKW02skvz8/2s5PIJPmQry9fcKOZ2p3mjbIOZbNmUCdRIlnvFIrUGmLnFYv01wxsK2JRg+pNNtuLiqltkYrCV2et1r4y2MlHVFrPuIHqjCM/cgsiqzSwtuYpjuA7L2L4AV4B4w3uonD6GuDYODeMLuBB0Dt5vBYcdjnUaFisUXmn+b5y1l86D1OiFTWdZJOePYV2Mf2ArXA7kk0GDBUQDoJ+/rNXtpwSgzhMcL3JbDnpnC3zcFEw8YrUSagGA3t0wUDnK1b1YQNujzxZ4yn4n2nbVhi7Q3mk+TV5l8ln+NojaT1z3rCuUZZ9/APDg0+Z9wEAAA==
+    Metadata:
+      aws:cdk:path: msk-demo-stack/CDKMetadata/Default
+
