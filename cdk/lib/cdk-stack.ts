@@ -61,12 +61,20 @@ export class CdkStack extends cdk.Stack {
       securityGroups: [dbSG]
     });
 
-    // const dbProxyLambda = new lambda.Function(this, 'db-proxy-lambda', {
-    //   runtime: lambda.Runtime.NODEJS_14_X,
-    //   handler: 'app.handler',
-    //   timeout: cdk.Duration.seconds(30),
-    //   code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'dist', 'db-proxy-lambda')),
-    // });
+    const dbProxyLambda = new lambda.Function(this, 'db-proxy-lambda', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'app.handler',
+      timeout: cdk.Duration.seconds(30),
+      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'dist', 'db-proxy-lambda')),
+      securityGroups: [lambdaSG],
+      vpc: vpc,
+      environment: {
+        PROXY_ENDPOINT: rdsProxy.endpoint,
+        RDS_SECRET_NAME: `${id}-rds-credentials`
+      },
+    });
+    rdsProxy.grantConnect(dbProxyLambda);
+    dbSecret.grantRead(dbProxyLambda);
 
     // const sourceLambda = new lambda.Function(this, 'source-lambda', {
     //   runtime: lambda.Runtime.NODEJS_14_X,

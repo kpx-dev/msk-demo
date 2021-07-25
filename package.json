@@ -4,9 +4,8 @@
   "description": "MSK demo",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cd cdk && cdk synth > ../cfn/template.yaml",
-    "deploy": "tsc && cp -r node_modules dist/source-invoke-lambda && cd cdk && cdk deploy --require-approval never"
+    "build": "tsc && cp src/db-proxy-lambda/*.pem dist/db-proxy-lambda/ && cp -r src/db-proxy-lambda/node_modules dist/db-proxy-lambda/ && cd cdk && cdk synth > ../cfn/template.yaml",
+    "deploy": "npm run build && cd cdk && cdk deploy --require-approval never"
   },
   "repository": {
     "type": "git",

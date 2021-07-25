@@ -678,10 +678,127 @@ Resources:
       - auroramysqldbSubnets19C6AE0F
     Metadata:
       aws:cdk:path: msk-demo-stack/aurora-mysql-db/rds-proxy/ProxyTargetGroup
+  dbproxylambdaServiceRole944DBBD9:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+    Metadata:
+      aws:cdk:path: msk-demo-stack/db-proxy-lambda/ServiceRole/Resource
+  dbproxylambdaServiceRoleDefaultPolicy7C775A73:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: rds-db:connect
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:"
+                  - Ref: AWS::Partition
+                  - ":rds-db:us-east-1:594518549660:dbuser:"
+                  - Fn::Select:
+                      - 6
+                      - Fn::Split:
+                          - ":"
+                          - Fn::GetAtt:
+                              - auroramysqldbrdsproxy779D2521
+                              - DBProxyArn
+                  - "/{{resolve:secretsmanager:"
+                  - Ref: rdsproxysecret8FA5AAA4
+                  - :SecretString:username::}}
+          - Action:
+              - secretsmanager:GetSecretValue
+              - secretsmanager:DescribeSecret
+            Effect: Allow
+            Resource:
+              Ref: rdsproxysecret8FA5AAA4
+        Version: "2012-10-17"
+      PolicyName: dbproxylambdaServiceRoleDefaultPolicy7C775A73
+      Roles:
+        - Ref: dbproxylambdaServiceRole944DBBD9
+    Metadata:
+      aws:cdk:path: msk-demo-stack/db-proxy-lambda/ServiceRole/DefaultPolicy/Resource
+  dbproxylambdaDA3ADA80:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3BucketF166A9F1
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3VersionKey12533D2E
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3VersionKey12533D2E
+      Role:
+        Fn::GetAtt:
+          - dbproxylambdaServiceRole944DBBD9
+          - Arn
+      Environment:
+        Variables:
+          PROXY_ENDPOINT:
+            Fn::GetAtt:
+              - auroramysqldbrdsproxy779D2521
+              - Endpoint
+          RDS_SECRET_NAME: msk-demo-stack-rds-credentials
+      Handler: app.handler
+      Runtime: nodejs14.x
+      Timeout: 30
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - lambdasg93781054
+              - GroupId
+        SubnetIds:
+          - Ref: vpcPrivateSubnet1Subnet934893E8
+          - Ref: vpcPrivateSubnet2Subnet7031C2BA
+          - Ref: vpcPrivateSubnet3Subnet985AC459
+    DependsOn:
+      - dbproxylambdaServiceRoleDefaultPolicy7C775A73
+      - dbproxylambdaServiceRole944DBBD9
+    Metadata:
+      aws:cdk:path: msk-demo-stack/db-proxy-lambda/Resource
+      aws:asset:path: asset.854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519
+      aws:asset:property: Code
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAAE31STW/CMAz9LbuHsE7azuNjQr1MVUHc3eCxAE1Q7MBQlf++tKEUMWknvzy/2M9xMpllr/L56R3ONFKb/bhR1qFslgxqL0ok651CMbOG2HnFYvZlejaI9lKD6kU266NqU+tiJgpfHbRa+spgJx9QaT3jCqoDDvzATYis0sDampu4BR950YZP4AUwnuEiCqdPEQ6Fc8PoIu4Fycn1NOE4y3eNhsUSlXeaLwtn/bHz8C+Rm61DoiBq2stmdvAU27SqKwyCUDlkqsHAFl18tu58LdSiFFbgtsh3Rm6Cx0wQbkOymQNDBYR9zzTqzeV8+oe4czef5nFbYOLe+jqFsz+XlHuEyUFXKQgNtWxKmxbUxcLGZXb6hEIIwtgNyh2NT9mbbD/PjrQeOW9Y1yjLFH8B/ZfJ2VkCAAA=
+      Analytics: v2:deflate64:H4sIAAAAAAAAE31STU/DMAz9LdyzjILgzNrB1Auquml3NzUla5tMibMxVf3vpF/rNCROfv7I84vtgAfBC398eIOzXYi8XDZCG+TNlkCULEWrnRHIVtYi+VghVcEirSwZJ4hFXyoBAzUSms6Z6lvW0TUonnizP4outU8ilriskmLrMoX92xml2hHuIKtwjs8x310LCSS1uhZ34D1OOvMJtAHCM1xYYuTJw5k4Vl6ax1PBoGT0VuR/+V2jIrZF4Yyky8Zod+w1/BuIVWHQ2pbVtuRNVDk7TmCELbMoDJKtQUGBxg+090eiDg1mB6ZAuhFyLbjPtMzkljdrIMjA4tRz+OpV5Tr8E7hRtw5jvzpQfqMTT2L0z2XI3cNBQc/UMgk1b1I9LKi3ifbL7OsH1LIK6iwH3nw4JaZlTdhP5HkB3RlZ3l+T93noRIkUehlty5TOkR/s8hS88u4kD1bKhXGKZI08Hewv8U0CmK8CAAA=
     Metadata:
       aws:cdk:path: msk-demo-stack/CDKMetadata/Default
+Parameters:
+  AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3BucketF166A9F1:
+    Type: String
+    Description: S3 bucket for asset "854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519"
+  AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3VersionKey12533D2E:
+    Type: String
+    Description: S3 key for asset version "854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519"
+  AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519ArtifactHash55651421:
+    Type: String
+    Description: Artifact hash for asset "854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519"
 
