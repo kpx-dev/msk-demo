@@ -15,33 +15,57 @@ export class CdkStack extends cdk.Stack {
       cidr: "172.30.0.0/16"
     });
 
+    let lambdaSG = new ec2.SecurityGroup(this, 'lambda-sg', {
+      vpc
+    });
+    let dbSG = new ec2.SecurityGroup(this, 'Proxy to DB Connection', {
+      vpc
+    });
+    dbSG.addIngressRule(dbSG, ec2.Port.tcp(3306), 'allow db connection');
+    dbSG.addIngressRule(lambdaSG, ec2.Port.tcp(3306), 'allow lambda connection');
+
     const mskCluster = new msk.Cluster(this, 'msk', {
       clusterName: 'msk-demo',
       kafkaVersion: msk.KafkaVersion.V2_8_0,
       vpc
     });
 
+    const dbSecret = new secrets.Secret(this, 'rds-proxy-secret', {
+      secretName: `${id}-rds-credentials`,
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({
+          username: 'admin',
+        }),
+        excludePunctuation: true,
+        includeSpace: false,
+        generateStringKey: 'password'
+      }
+    });
+
     const auroraCluster = new rds.DatabaseCluster(this, 'aurora-mysql-db', {
       engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_09_2 }),
+      credentials: rds.Credentials.fromSecret(dbSecret),
       instanceProps: {
         vpcSubnets: {
           subnetType: ec2.SubnetType.PRIVATE,
         },
         vpc,
+        securityGroups: [dbSG]
       },
     });
 
-    const rdsProxySecret = new secrets.Secret(this, 'rds-proxy-secret');
     const rdsProxy = auroraCluster.addProxy('rds-proxy', {
-      secrets: [rdsProxySecret],
+      secrets: [dbSecret],
       vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+      securityGroups: [dbSG]
     });
 
-    // const targetLambda = new lambda.Function(this, 'target-lambda', {
+    // const dbProxyLambda = new lambda.Function(this, 'db-proxy-lambda', {
     //   runtime: lambda.Runtime.NODEJS_14_X,
     //   handler: 'app.handler',
-    //   timeout: cdk.Duration.seconds(10),
-    //   code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'dist', 'target-invoke-lambda')),
+    //   timeout: cdk.Duration.seconds(30),
+    //   code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'dist', 'db-proxy-lambda')),
     // });
 
     // const sourceLambda = new lambda.Function(this, 'source-lambda', {

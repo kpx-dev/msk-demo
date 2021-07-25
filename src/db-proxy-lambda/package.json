@@ -1,0 +1,14 @@
+{
+  "name": "db-proxy-lambda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "knex": "^0.95.7"
+  }
+}
