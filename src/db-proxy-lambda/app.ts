@@ -11,7 +11,7 @@ exports.handler = async function(event:any) {
   console.log(`Getting secret for ${process.env.RDS_SECRET_NAME}`);
 
   // All requests get routed to this function, when opened via browser it looks for a favicon.
-  if(event.rawPath === '/favicon.ico'){
+  if(event.path === '/favicon.ico'){
     return sendRes(404, 'no favicon here');
   }
 
@@ -68,7 +68,7 @@ exports.handler = async function(event:any) {
 
   // Insert a new record with an auto generated ID and the url you hit on the API Gateway
   await new Promise( (resolve,reject) => {
-    connection.query(`INSERT INTO rds_proxy(url) VALUES ('${event.rawPath}')`, function (error:any, results:any, fields:any) {
+    connection.query(`INSERT INTO rds_proxy(url) VALUES ('${event.path}')`, function (error:any, results:any, fields:any) {
       if (error) throw error;
       // connected!
       resolve('INSERT query returned '+JSON.stringify(results));

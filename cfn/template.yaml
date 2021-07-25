@@ -741,7 +741,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3BucketF166A9F1
+          Ref: AssetParameterse461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172eS3BucketB3251FB1
         S3Key:
           Fn::Join:
             - ""
@@ -749,12 +749,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3VersionKey12533D2E
+                      - Ref: AssetParameterse461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172eS3VersionKey38381DF9
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3VersionKey12533D2E
+                      - Ref: AssetParameterse461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172eS3VersionKey38381DF9
       Role:
         Fn::GetAtt:
           - dbproxylambdaServiceRole944DBBD9
@@ -783,7 +783,7 @@ Resources:
       - dbproxylambdaServiceRole944DBBD9
     Metadata:
       aws:cdk:path: msk-demo-stack/db-proxy-lambda/Resource
-      aws:asset:path: asset.854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519
+      aws:asset:path: asset.e461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172e
       aws:asset:property: Code
   CDKMetadata:
     Type: AWS::CDK::Metadata
@@ -792,13 +792,13 @@ Resources:
     Metadata:
       aws:cdk:path: msk-demo-stack/CDKMetadata/Default
 Parameters:
-  AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3BucketF166A9F1:
+  AssetParameterse461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172eS3BucketB3251FB1:
     Type: String
-    Description: S3 bucket for asset "854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519"
-  AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519S3VersionKey12533D2E:
+    Description: S3 bucket for asset "e461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172e"
+  AssetParameterse461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172eS3VersionKey38381DF9:
     Type: String
-    Description: S3 key for asset version "854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519"
-  AssetParameters854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519ArtifactHash55651421:
+    Description: S3 key for asset version "e461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172e"
+  AssetParameterse461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172eArtifactHashED68D20C:
     Type: String
-    Description: Artifact hash for asset "854e70a4996dbf90461c7983b2f6ef4220a47a38ed609442b725bde94bf15519"
+    Description: Artifact hash for asset "e461a416d8256a212581242126178654db4f4d97051f3354fb0d0c1f151d172e"
 
